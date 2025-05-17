@@ -127,7 +127,7 @@ final class CoreDataTaskManagerTests: XCTestCase {
         randomTest(max: 100, current: 1)
     }
     
-    func randomTest(max: Int, current: Int){
+    func randomTest(max: Int, current: Int) {
         if current >= max { return }
         let expectation = expectation(description: "random test \(current)")
         

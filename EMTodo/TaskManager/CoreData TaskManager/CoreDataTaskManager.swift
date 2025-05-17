@@ -38,9 +38,10 @@ class CoreDataTaskManager: TaskManager {
     }
     
     func add(_ task: ToDoTask, completion: Completion = nil) {
-        let entity = NSEntityDescription.entity(forEntityName: "CDTodoTask", in: self.context)!
         queue.async { [weak self] in
             guard let self else { return }
+            
+            let entity = NSEntityDescription.entity(forEntityName: "CDTodoTask", in: self.context)!
             self.context.perform {
                 let managedTask = CDTodoTask(entity: entity, insertInto: self.context)
                 managedTask.copyValues(from: task)
@@ -49,111 +50,85 @@ class CoreDataTaskManager: TaskManager {
             DispatchQueue.main.sync {
                 completion?(.success(task))
             }
+            
         }
     }
     
     func getAll(completion: CompletionArray) {
-        queue.async { [weak self] in
-            guard let self else { return }
-            var result: ResultTaskArray
+        asyncCompletionTask(completion) { [weak self] in
+            guard let self else { return [] }
             
-            do{
-                var tasks: [ToDoTask] = []
-                for task in try getCDTasks() {
-                    let toDoTask = ToDoTask(task: task)
-                    tasks.append(toDoTask)
-                }
-                result = .success(tasks)
+            var tasks: [ToDoTask] = []
+            for task in try self.getCDTasks() {
+                tasks.append(task.toDoTask)
             }
-            catch { result = .failure(error) }
-            
-            DispatchQueue.main.sync {
-                completion?(result)
-            }
+            return tasks
         }
     }
     
     func update(id: UUID, task newTask: ToDoTask, completion: Completion = nil) {
-        queue.async { [weak self] in
-            var result: ResultTask = .success(nil)
-            guard let self else { return }
-            do {
-                for task in try self.getCDTasks() {
-                    if task.id == id {
-                        context.perform {
-                            task.copyValues(from: newTask, withoutID: true)
-                            self.saveContext()
-                        }
-                        let todoTask = ToDoTask(task: task)
-                        result = .success(todoTask)
-                        break
-                    }
-                }
+        asyncCompletionTask(completion) { [weak self] in
+            guard let self else { return nil }
+            
+            let task = try self.getCDTasks().first(where: { $0.id == id })
+            self.context.performAndWait {
+                task?.copyValues(from: newTask, withoutID: true)
+                self.saveContext()
             }
-            catch { result = .failure(error) }
-            DispatchQueue.main.sync {
-                completion?(result)
-            }
+            return task?.toDoTask
+            
         }
     }
     
     func get(id: UUID, completion: Completion = nil) {
-        queue.async { [weak self] in
-            guard let self else { return }
-            var result: ResultTask = .success(nil)
-            
-            do{
-                if let task = try getCDTasks().first(where: { $0.id == id }) {
-                    let todoTask = ToDoTask(task: task)
-                    result = .success(todoTask)
-                }
-            }
-            catch { result = .failure(error) }
-            
-            DispatchQueue.main.sync {
-                completion?(result)
-            }
+        asyncCompletionTask(completion) { [weak self] in
+            guard let self else { return nil }
+            return try self.getCDTasks().first(where: { $0.id == id })?.toDoTask
         }
     }
     
     func remove(id: UUID, completion: Completion = nil) {
-        queue.async { [weak self] in
-            guard let self else { return }
-            var result: ResultTask = .success(nil)
-            do {
-                if let task = try getCDTasks().first(where: { $0.id == id } ) {
-                    context.perform {
-                        self.context.delete(task)
-                        result = .success(ToDoTask(task: task))
-                        self.saveContext()
-                    }
-                }
+        asyncCompletionTask(completion) { [weak self] in
+            guard let self else { return nil }
+            
+            guard let task = try self.getCDTasks().first(where: { $0.id == id } ) else { return nil }
+            let taskToReturn = task.toDoTask
+            self.context.performAndWait {
+                self.context.delete(task)
+                self.saveContext()
             }
-            catch { result = .failure(error) }
-            DispatchQueue.main.sync {
-                completion?(result)
-            }
+            return taskToReturn
+            
         }
     }
 
     func removeAll(completion: CompletionArray = nil) {
-        queue.async { [weak self] in
-            guard let self else { return }
-            var result: ResultTaskArray = .success([])
-            context.perform {
-                do {
-                    var deletedTasks: [ToDoTask] = []
-                    let tasks = try self.getCDTasks()
-                    for task in tasks {
-                        self.context.delete(task)
-                        let todoTsak = ToDoTask(task: task)
-                        deletedTasks.append(todoTsak)
-                    }
-                    result = .success(deletedTasks)
+        asyncCompletionTask(completion) { [weak self] in
+            guard let self else { return [] }
+            
+            let tasks = try self.getCDTasks()
+            let deletedTasks: [ToDoTask] = tasks.compactMap { $0.toDoTask }
+            
+            self.context.perform {
+                for task in tasks {
+                    self.context.delete(task)
                 }
-                catch { result = .failure(error) }
                 self.saveContext()
             }
+            return deletedTasks
+        }
+
+    }
+    
+    private func asyncCompletionTask<T>(_ completion: ((Result<T, Error>) -> ())? = nil, _ closure: @escaping (() throws -> T)) {
+        queue.async {
+            var result: Result<T, Error> = .failure(NSError(domain: "AsyncCompletionTaskResultError", code: 404, userInfo: nil))
+            do {
+                let data = try closure()
+                result = .success(data)
+            }
+            catch { result = .failure(error) }
+            
             DispatchQueue.main.sync {
                 completion?(result)
             }
@@ -169,12 +144,8 @@ class CoreDataTaskManager: TaskManager {
     
 }
 
-fileprivate extension ToDoTask {
-    init(task: CDTodoTask) {
-        self.id = task.id
-        self.title = task.title
-        self.taskDescription = task.taskDescription
-        self.isDone = task.isDone
-        self.date = task.date
+fileprivate extension CDTodoTask {
+    var toDoTask: ToDoTask {
+        return ToDoTask(id: id, title: title, taskDescription: taskDescription, isDone: isDone, date: date)
     }
 }
