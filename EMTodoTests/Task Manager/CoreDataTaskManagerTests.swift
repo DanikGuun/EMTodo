@@ -68,7 +68,7 @@ final class CoreDataTaskManagerTests: XCTestCase {
         let expextation = expectation(description: "UpdateTask")
         
         coreDataTM.add(oldTask)
-        coreDataTM.update(oldTask.id, with: newTask)
+        coreDataTM.update(id: oldTask.id, task: newTask)
         coreDataTM.get(id: oldTask.id) { result in
             switch result{
             case .success(let task): fetchedTask = task
@@ -88,7 +88,7 @@ final class CoreDataTaskManagerTests: XCTestCase {
         let expection = expectation(description: "DeleteTask")
         
         coreDataTM.add(task)
-        coreDataTM.delete(id: task.id)
+        coreDataTM.remove(id: task.id)
         coreDataTM.get(id: task.id) { result in
             switch result{
             case .success(let task): fetchedTask = task
@@ -121,6 +121,31 @@ final class CoreDataTaskManagerTests: XCTestCase {
         
         wait(for: [expection], timeout: 1)
         XCTAssertEqual(count, 0)
+    }
+    
+    func testStress() {
+        randomTest(max: 100, current: 1)
+    }
+    
+    func randomTest(max: Int, current: Int){
+        if current >= max { return }
+        let expectation = expectation(description: "random test \(current)")
+        
+        let i = Int.random(in: 0..<5)
+        switch i {
+        case 0: testAddGet()
+        case 1: testGetById()
+        case 2: testUpdate()
+        case 3: testDelete()
+        default: testRemoveAll()
+        }
+        
+        coreDataTM.removeAll { _ in
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1)
+        randomTest(max: max, current: current + 1)
     }
     
 }

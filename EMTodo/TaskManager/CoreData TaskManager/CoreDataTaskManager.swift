@@ -1,11 +1,12 @@
 
 import CoreData
 
-class CoreDataTaskManager {
+class CoreDataTaskManager: TaskManager {
+    
     typealias ResultTask = Result<ToDoTask?, Error>
     typealias ResultTaskArray = Result<[ToDoTask], Error>
-    typealias Compeletion = ((ResultTask) -> Void)?
-    typealias CompeletionArray = ((ResultTaskArray) -> Void)?
+    typealias Completion = ((ResultTask) -> Void)?
+    typealias CompletionArray = ((ResultTaskArray) -> Void)?
     
     var container: NSPersistentContainer!
     var context: NSManagedObjectContext { container.viewContext }
@@ -36,7 +37,7 @@ class CoreDataTaskManager {
         }
     }
     
-    func add(_ task: ToDoTask, completion: Compeletion = nil) {
+    func add(_ task: ToDoTask, completion: Completion = nil) {
         let entity = NSEntityDescription.entity(forEntityName: "CDTodoTask", in: self.context)!
         queue.async { [weak self] in
             guard let self else { return }
@@ -51,10 +52,10 @@ class CoreDataTaskManager {
         }
     }
     
-    func getAll(completion: CompeletionArray) {
+    func getAll(completion: CompletionArray) {
         queue.async { [weak self] in
             guard let self else { return }
-            var result: Result<[ToDoTask], Error>;
+            var result: ResultTaskArray
             
             do{
                 var tasks: [ToDoTask] = []
@@ -72,7 +73,7 @@ class CoreDataTaskManager {
         }
     }
     
-    func update(_ id: UUID, with newTask: ToDoTask, completion: Compeletion = nil) {
+    func update(id: UUID, task newTask: ToDoTask, completion: Completion = nil) {
         queue.async { [weak self] in
             var result: ResultTask = .success(nil)
             guard let self else { return }
@@ -96,10 +97,10 @@ class CoreDataTaskManager {
         }
     }
     
-    func get(id: UUID, completion: Compeletion = nil) {
+    func get(id: UUID, completion: Completion = nil) {
         queue.async { [weak self] in
             guard let self else { return }
-            var result: Result<ToDoTask?, Error> = .success(nil)
+            var result: ResultTask = .success(nil)
             
             do{
                 if let task = try getCDTasks().first(where: { $0.id == id }) {
@@ -115,7 +116,7 @@ class CoreDataTaskManager {
         }
     }
     
-    func delete(id: UUID, completion: Compeletion = nil) {
+    func remove(id: UUID, completion: Completion = nil) {
         queue.async { [weak self] in
             guard let self else { return }
             var result: ResultTask = .success(nil)
@@ -135,7 +136,7 @@ class CoreDataTaskManager {
         }
     }
 
-    func removeAll(completion: CompeletionArray = nil) {
+    func removeAll(completion: CompletionArray = nil) {
         queue.async { [weak self] in
             guard let self else { return }
             var result: ResultTaskArray = .success([])
@@ -151,8 +152,8 @@ class CoreDataTaskManager {
                     result = .success(deletedTasks)
                 }
                 catch { result = .failure(error) }
+                self.saveContext()
             }
-            self.saveContext()
             DispatchQueue.main.sync {
                 completion?(result)
             }
@@ -160,8 +161,10 @@ class CoreDataTaskManager {
     }
     
     private func getCDTasks() throws -> [CDTodoTask] {
-        let request = CDTodoTask.fetchRequest()
-        return try context.fetch(request)
+        try context.performAndWait {
+            let request = CDTodoTask.fetchRequest()
+            return try context.fetch(request)
+        }
     }
     
 }
