@@ -3,8 +3,13 @@ import UIKit
 
 struct TaskListTableContentConfiguration: UIContentConfiguration {
     
+    var title: String?
+    var taskDescription: String?
+    var subtitle: String?
+    var isDone: Bool?
+    
     func makeContentView() -> any UIView & UIContentView {
-        return TaskListTableContentView()
+        return TaskListTableContentView(configuration: self)
     }
     
     func updated(for state: any UIConfigurationState) -> TaskListTableContentConfiguration {

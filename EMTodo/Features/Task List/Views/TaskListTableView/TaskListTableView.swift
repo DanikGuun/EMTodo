@@ -1,22 +1,24 @@
 
 import UIKit
 
-class TaskListTableView: UICollectionView, TaskListPresenter {
+class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
     
-    private var diffableDataSource: UICollectionViewDiffableDataSource<UUID, UUID>!
+    private var diffableDataSource: UITableViewDiffableDataSource<UUID, UUID>!
     private var items: [TaskListItem] = []
     
     convenience init() {
-        self.init(frame: .zero, collectionViewLayout: Self.makeLayout())
-        self.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        self.init(frame: .zero, style: .plain)
+        self.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        self.delegate = self
+        self.rowHeight = DC.cellHeight
         setupDiffableDataSource()
         reloadSnapshot()
     }
     
     private func setupDiffableDataSource() {
-        diffableDataSource = UICollectionViewDiffableDataSource(collectionView: self, cellProvider: { (collection, indexPath, id) in
-            let cell = collection.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
-            cell.contentConfiguration = TaskListTableContentConfiguration()
+        diffableDataSource = UITableViewDiffableDataSource(tableView: self, cellProvider: { (tableView, indexPath, id) in
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+            cell.contentConfiguration = TaskListTableContentConfiguration(title: "Title", taskDescription: "sla;djflasdjflkjasl;kdjforengadfkjloadkjsfloi94utghou4397uho'hsdjfsxa/fnk34toihreoiw", subtitle: "Subtitle")
             return cell
         })
     }
@@ -33,12 +35,14 @@ class TaskListTableView: UICollectionView, TaskListPresenter {
         diffableDataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    private static func makeLayout() -> UICollectionViewCompositionalLayout {
-        let conf = UICollectionLayoutListConfiguration(appearance: .plain)
-    
-        let layout = UICollectionViewCompositionalLayout.list(using: conf)
-        
-        return layout
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .normal, title: "Удалить", handler: { (action, view, completion) in
+            completion(true)
+        })
+        deleteAction.image = UIImage(systemName: "trash")
+        deleteAction.backgroundColor = .systemRed
+        let conf = UISwipeActionsConfiguration(actions: [deleteAction])
+        return conf
     }
     
 }
