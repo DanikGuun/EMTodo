@@ -1,7 +1,7 @@
 
 class BaseViewControllerFabric: ViewControllersFabric {
     func makeTaskListViewController() -> any Coordinatable {
-        return ViewController()
+        return TaskListViewController()
     }
     
     func makeAddTaskViewController() -> any Coordinatable {
