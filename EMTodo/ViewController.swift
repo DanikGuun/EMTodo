@@ -7,10 +7,12 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, Coordinatable {
+    var coordinator: (any Coordinator)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = .systemMint
         // Do any additional setup after loading the view.
     }
 
