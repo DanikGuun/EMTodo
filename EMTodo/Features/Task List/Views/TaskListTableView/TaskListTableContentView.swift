@@ -5,7 +5,7 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
 
     var configuration: any UIContentConfiguration { didSet { updateConfiguration() } }
     
-    private var isDoneButton = UIButton(configuration: .tinted())
+    private var isDoneButton = CheckmarkButton()
     private var labelsBackgroundView = UIView()
     private var titleLabel = UILabel()
     private var descriptionLabel = UILabel()
@@ -50,8 +50,6 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
             maker.height.equalToSuperview().dividedBy(3)
             maker.width.equalTo(self.isDoneButton.snp.height)
         }
-        isDoneButton.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
-        isDoneButton.changesSelectionAsPrimaryAction = true
     }
     
     private func setupLabelsBackgroundView() {
