@@ -1,9 +1,9 @@
 
 import UIKit
 
-class CheckmarkButton: UIControl {
+class CheckmarkView: UIView {
     
-    override var isSelected: Bool { didSet { animateCheckmarkSelection(); self.sendActions(for: .valueChanged) } }
+    var isSelected: Bool = false { didSet { animateCheckmarkSelection() } }
     
     private let backgroundLayer: CAShapeLayer = CAShapeLayer()
     private let foregroundLayer: CAShapeLayer = CAShapeLayer()
@@ -18,9 +18,6 @@ class CheckmarkButton: UIControl {
     
     convenience init() {
         self.init(frame: .zero)
-        self.addAction(UIAction(handler: { _ in
-            self.isSelected.toggle()
-        }), for: .touchUpInside)
     }
     
     override init(frame: CGRect) {
@@ -105,7 +102,7 @@ class CheckmarkButton: UIControl {
     private func animateForeground() {
         let targetValue = isSelected ? 1.0 : 0
         let anim = CABasicAnimation(keyPath: "strokeEnd")
-        anim.fromValue = foregroundLayer.strokeColor
+        anim.fromValue = foregroundLayer.strokeEnd
         anim.toValue = targetValue
         anim.duration = 0.6
         anim.timingFunction = CAMediaTimingFunction(name: .easeOut)
@@ -116,7 +113,7 @@ class CheckmarkButton: UIControl {
     private func animateCheckmark() {
         let targetValue = isSelected ? 1.0 : 0
         let anim = CABasicAnimation(keyPath: "strokeEnd")
-        anim.fromValue = checkmarkLayer.strokeColor
+        anim.fromValue = checkmarkLayer.strokeEnd
         anim.toValue = targetValue
         anim.duration = 0.5
         anim.timingFunction = CAMediaTimingFunction(name: .easeOut)

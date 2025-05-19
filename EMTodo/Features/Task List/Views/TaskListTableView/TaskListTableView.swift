@@ -3,6 +3,7 @@ import UIKit
 
 class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
     
+    var isDoneUpdated: ((UUID) -> Void)?
     private var diffableDataSource: UITableViewDiffableDataSource<UUID, UUID>!
     private var items: [TaskListItem] = []
     
@@ -13,12 +14,21 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
         self.rowHeight = DC.cellHeight
         setupDiffableDataSource()
         reloadSnapshot()
+        self.selectionFollowsFocus = false
     }
     
     private func setupDiffableDataSource() {
-        diffableDataSource = UITableViewDiffableDataSource(tableView: self, cellProvider: { (tableView, indexPath, id) in
+        diffableDataSource = UITableViewDiffableDataSource(tableView: self, cellProvider: { [weak self] (tableView, indexPath, id) in
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-            cell.contentConfiguration = TaskListTableContentConfiguration(title: "Title", taskDescription: "sla;djflasdjflkjasl;kdjforengadfkjloadkjsfloi94utghou4397uho'hsdjfsxa/fnk34toihreoiw", subtitle: "Subtitle")
+            if let item = self?.items.first(where: { $0.id == id }) {
+                var conf = TaskListTableContentConfiguration()
+                conf.title = item.title
+                conf.taskDescription = item.taskDescription
+                conf.subtitle = item.subTitle
+                conf.isDone = item.isDone
+                cell.contentConfiguration = conf
+            }
+            cell.selectionStyle = .none
             return cell
         })
     }
@@ -43,6 +53,20 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
         deleteAction.backgroundColor = .systemRed
         let conf = UISwipeActionsConfiguration(actions: [deleteAction])
         return conf
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        guard let id = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        guard let index = items.firstIndex(where: { $0.id == id }) else { return }
+        items[index].isDone.toggle()
+        
+        DispatchQueue.main.async { [weak self] in //откладываем на следующий RunLoop, тк CABasicAnimation конфликтует с анимацией выделения ячейки
+            guard let cell = self?.cellForRow(at: indexPath) else { return }
+            guard var conf = cell.contentConfiguration as? TaskListTableContentConfiguration else { return }
+            conf.isDone.toggle()
+            cell.contentConfiguration = conf
+        }
     }
     
 }

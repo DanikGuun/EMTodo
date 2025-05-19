@@ -5,7 +5,7 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
 
     var configuration: any UIContentConfiguration { didSet { updateConfiguration() } }
     
-    private var isDoneButton = CheckmarkButton()
+    private var isDoneView = CheckmarkView()
     private var labelsBackgroundView = UIView()
     private var titleLabel = UILabel()
     private var descriptionLabel = UILabel()
@@ -31,6 +31,7 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
         titleLabel.text = conf.title
         descriptionLabel.text = conf.taskDescription
         dateLabel.text = conf.subtitle
+        isDoneView.isSelected = conf.isDone
     }
     
     private func setup() {
@@ -42,13 +43,13 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
     }
     
     private func setupIsDoneButton() {
-        addSubview(isDoneButton)
-        isDoneButton.translatesAutoresizingMaskIntoConstraints = false
-        isDoneButton.snp.makeConstraints { [weak self] maker in
+        addSubview(isDoneView)
+        isDoneView.translatesAutoresizingMaskIntoConstraints = false
+        isDoneView.snp.makeConstraints { [weak self] maker in
             guard let self else { return }
-            maker.top.leading.equalToSuperview().inset(DC.innerCellContentSpace)
-            maker.height.equalToSuperview().dividedBy(3)
-            maker.width.equalTo(self.isDoneButton.snp.height)
+            maker.top.leading.equalToSuperview().inset(DC.innerCellSpace)
+            maker.height.equalToSuperview().dividedBy(4)
+            maker.width.equalTo(self.isDoneView.snp.height)
         }
     }
     
@@ -58,7 +59,7 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
         labelsBackgroundView.snp.makeConstraints { [weak self] maker in
             guard let self = self else { return }
             maker.top.bottom.trailing.equalToSuperview().inset(DC.innerCellContentSpace)
-            maker.leading.equalTo(self.isDoneButton.snp.trailing).offset(DC.innerCellContentSpace)
+            maker.leading.equalTo(self.isDoneView.snp.trailing).offset(DC.innerCellContentSpace)
         }
         
         let contextMenuInteraction = UIContextMenuInteraction(delegate: self)
