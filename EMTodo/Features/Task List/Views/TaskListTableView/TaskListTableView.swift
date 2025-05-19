@@ -46,13 +46,22 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .normal, title: "Удалить", handler: { (action, view, completion) in
+        let deleteAction = UIContextualAction(style: .normal, title: "Удалить", handler: { [weak self] (action, view, completion) in
+            self?.removeCellAndItem(indexPath)
             completion(true)
         })
         deleteAction.image = UIImage(systemName: "trash")
         deleteAction.backgroundColor = .systemRed
         let conf = UISwipeActionsConfiguration(actions: [deleteAction])
         return conf
+    }
+    
+    private func removeCellAndItem(_ indexPath: IndexPath) {
+        guard let id = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        items.removeAll(where: { $0.id == id })
+        var snapshot = diffableDataSource.snapshot()
+        snapshot.deleteItems([id])
+        diffableDataSource.apply(snapshot, animatingDifferences: true)
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
