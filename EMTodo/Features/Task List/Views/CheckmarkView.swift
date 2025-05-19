@@ -9,7 +9,7 @@ class CheckmarkView: UIView {
     private let foregroundLayer: CAShapeLayer = CAShapeLayer()
     private let checkmarkLayer: CAShapeLayer = CAShapeLayer()
     
-    private let lineWidth: CGFloat = 2
+    private let lineWidth: CGFloat = 1.5
     private var radius: CGFloat {
         return min(bounds.width, bounds.height) / 2
     }

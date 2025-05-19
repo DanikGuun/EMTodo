@@ -11,7 +11,7 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
         self.init(frame: .zero, style: .plain)
         self.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         self.delegate = self
-        self.rowHeight = DC.cellHeight
+        self.estimatedRowHeight = DC.cellHeight
         setupDiffableDataSource()
         reloadSnapshot()
         self.selectionFollowsFocus = false

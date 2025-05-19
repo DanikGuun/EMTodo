@@ -48,7 +48,7 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
         isDoneView.snp.makeConstraints { [weak self] maker in
             guard let self else { return }
             maker.top.leading.equalToSuperview().inset(DC.innerCellSpace)
-            maker.height.equalToSuperview().dividedBy(4)
+            maker.width.equalToSuperview().dividedBy(15)
             maker.width.equalTo(self.isDoneView.snp.height)
         }
     }
@@ -93,8 +93,8 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
         descriptionLabel.snp.makeConstraints { [weak self] maker in
             guard let self else { return }
             maker.leading.trailing.equalToSuperview().inset(DC.innerCellSpace)
-            maker.top.equalTo(self.titleLabel.snp.bottom).priority(.medium)
-            maker.bottom.equalTo(self.dateLabel.snp.top).priority(.medium)
+            maker.top.equalTo(self.titleLabel.snp.bottom).offset(DC.innerCellContentSpace*1.5).priority(.high)
+            maker.bottom.equalTo(self.dateLabel.snp.top).offset(-DC.innerCellContentSpace*1.5).priority(.high)
         }
         descriptionLabel.font = UIFont.preferredFont(forTextStyle: .caption1)
         descriptionLabel.numberOfLines = 2
