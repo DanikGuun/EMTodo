@@ -48,6 +48,7 @@ final class BaseCoordinatorTests: XCTestCase {
 }
 
 fileprivate class MockViewControllersFabric: ViewControllersFabric {
+    
     func makeTaskListViewController() -> any EMTodo.Coordinatable {
         return MockViewController(type: .taskList)
     }
@@ -59,12 +60,17 @@ fileprivate class MockViewControllersFabric: ViewControllersFabric {
     func makeEditTaskViewController(task: EMTodo.ToDoTask) -> any EMTodo.Coordinatable {
         return MockViewController(type: .editTask)
     }
+    
+    func makeDatePickerViewController(startDate: Date, callback: @escaping (Date) -> Void) -> any EMTodo.Coordinatable {
+        return MockViewController(type: .datePicker)
+    }
 }
 
 fileprivate enum ViewControllerType: String {
     case taskList
     case addTask
     case editTask
+    case datePicker
 }
 
 fileprivate class MockViewController: UIViewController, Coordinatable {

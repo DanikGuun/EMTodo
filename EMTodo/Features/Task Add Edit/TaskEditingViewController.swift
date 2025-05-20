@@ -7,6 +7,7 @@ class TaskEditingViewController: UIViewController, Coordinatable {
     var titleTextField = UITextField()
     var datePickerButton = UIButton()
     var descriptionTextView = UITextView()
+    private var currentDate = Date() { didSet { setDateButtonText(currentDate) } }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,6 +51,22 @@ class TaskEditingViewController: UIViewController, Coordinatable {
         conf.baseForegroundColor = .secondaryLabel
         conf.contentInsets = .zero
         datePickerButton.configuration = conf
+        datePickerButton.addAction(UIAction(handler: presentDatePicker), for: .touchUpInside)
+    }
+    
+    private func presentDatePicker(_ action: UIAction?) {
+        coordinator?.presentDatePickerViewController(startDate: currentDate, callback: dateHasUpdated, sourceView: datePickerButton, animated: true)
+    }
+    
+    private func dateHasUpdated(_ date: Date ) {
+        currentDate = date
+    }
+    
+    private func setDateButtonText(_ date: Date) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        let dateString = dateFormatter.string(from: date)
+        setDateButtonText(dateString)
     }
     
     private func setDateButtonText(_ text: String) {

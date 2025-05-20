@@ -1,5 +1,8 @@
 
+import Foundation
+
 class BaseViewControllerFabric: ViewControllersFabric {
+    
     func makeTaskListViewController() -> any Coordinatable {
         return TaskListViewController()
     }
@@ -10,6 +13,13 @@ class BaseViewControllerFabric: ViewControllersFabric {
     
     func makeEditTaskViewController(task: ToDoTask) -> any Coordinatable {
         return TaskEditingViewController()
+    }
+    
+    func makeDatePickerViewController(startDate: Date, callback: @escaping (Date) -> Void) -> any Coordinatable {
+        let controller = DatePickerViewController()
+        controller.callback = callback
+        controller.datePicker.date = startDate
+        return controller
     }
     
 }
