@@ -8,6 +8,7 @@ class TaskAddModel: TaskEditingModel {
     }
     
     func perform(task: TodoTask) {
+        if task.title.isEmpty, task.taskDescription.isEmpty { return }
         taskManager.add(task, completion: nil)
     }
     
