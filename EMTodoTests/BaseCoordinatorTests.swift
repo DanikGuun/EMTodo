@@ -31,7 +31,7 @@ final class BaseCoordinatorTests: XCTestCase {
     }
     
     func testGoToEditVC() {
-        coordinator.goToEditTaskViewController(task: TodoTask())
+        coordinator.goToEditTaskViewController(id: UUID())
         let type = currentMockVC.type
         XCTAssertEqual(type, .editTask)
     }
@@ -47,7 +47,7 @@ final class BaseCoordinatorTests: XCTestCase {
     
 }
 
-fileprivate class MockViewControllersFabric: ViewControllersFabric {
+fileprivate class MockViewControllersFabric: ViewControllersFactory {
     
     func makeTaskListViewController() -> any EMTodo.Coordinatable {
         return MockViewController(type: .taskList)
@@ -57,7 +57,7 @@ fileprivate class MockViewControllersFabric: ViewControllersFabric {
         return MockViewController(type: .addTask)
     }
     
-    func makeEditTaskViewController(task: EMTodo.TodoTask) -> any EMTodo.Coordinatable {
+    func makeEditTaskViewController(id: UUID) -> any EMTodo.Coordinatable {
         return MockViewController(type: .editTask)
     }
     

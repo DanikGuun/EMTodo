@@ -1,9 +1,10 @@
 
 import UIKit
+import Foundation
 
-protocol ViewControllersFabric {
+protocol ViewControllersFactory {
     func makeTaskListViewController() -> Coordinatable
     func makeAddTaskViewController() -> Coordinatable
-    func makeEditTaskViewController(task: TodoTask) -> Coordinatable
+    func makeEditTaskViewController(id: UUID) -> Coordinatable
     func makeDatePickerViewController(startDate: Date, callback: @escaping (Date) -> Void) -> Coordinatable
 }

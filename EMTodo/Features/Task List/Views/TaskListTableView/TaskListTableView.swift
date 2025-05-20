@@ -68,9 +68,10 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
     
     private func removeCellAndItem(_ indexPath: IndexPath) {
         guard let id = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        guard let item = items.first(where: { $0.id == id }) else { return }
         items.removeAll(where: { $0.id == id })
         reloadSnapshot()
-        taskDelegate?.taskListPresenterDidDelete(items.first(where: { $0.id == id })!)
+        taskDelegate?.taskListPresenterDidDelete(item)
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

@@ -4,14 +4,33 @@ import UIKit
 class TaskEditingViewController: UIViewController, Coordinatable, UITextFieldDelegate{
     
     var coordinator: (any Coordinator)?
+    var model: TaskEditingModel
+    var initialTask: TodoTask?
+    
     var titleTextField = UITextField()
     var datePickerButton = UIButton()
     var descriptionTextView = UITextView()
     private var currentDate = Date() { didSet { setDateButtonText(currentDate) } }
     
+    init(model: TaskEditingModel) {
+        self.model = model
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+        loadInitialValues()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        let task = getCurrentTodoTask()
+        model.perform(task: task)
     }
     
     private func setup() {
@@ -105,6 +124,24 @@ class TaskEditingViewController: UIViewController, Coordinatable, UITextFieldDel
         descriptionTextView.isEditable = true
         descriptionTextView.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         descriptionTextView.contentInset = UIEdgeInsets(top: 4, left: DC.edgeInset, bottom: 0, right: DC.edgeInset)
+    }
+    
+    private func loadInitialValues() {
+        model.loadInitialTask { [weak self] task in
+            self?.titleTextField.text = task.title
+            self?.setDateButtonText(task.date)
+            self?.descriptionTextView.text = task.taskDescription
+        }
+    }
+    
+    private func getCurrentTodoTask() -> TodoTask {
+        var task = TodoTask()
+        task.id = initialTask?.id ?? UUID()
+        task.title = titleTextField.text ?? ""
+        task.taskDescription = descriptionTextView.text ?? ""
+        task.isDone = initialTask?.isDone ?? false
+        task.date = currentDate
+        return task
     }
     
 }

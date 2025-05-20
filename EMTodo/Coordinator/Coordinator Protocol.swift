@@ -1,5 +1,6 @@
 
 import UIKit
+import Foundation
 
 protocol Coordinator {
     var mainViewController: UIViewController { get }
@@ -7,7 +8,7 @@ protocol Coordinator {
     
     func popToRoot(animated: Bool)
     func goToAddTaskViewController(animated: Bool)
-    func goToEditTaskViewController(task: TodoTask, animated: Bool)
+    func goToEditTaskViewController(id: UUID, animated: Bool)
     func presentDatePickerViewController(startDate: Date, callback: @escaping (Date) -> Void, sourceView: UIView, animated: Bool)
 }
 

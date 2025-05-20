@@ -4,11 +4,11 @@ import UIKit
 class BaseCoordinator: NSObject, Coordinator, UIAdaptivePresentationControllerDelegate {
     
     var currentViewController: Coordinatable { return getModalOrSelfController(for: navigationViewController.topViewController as! Coordinatable) }
-    var viewControllersFabric: ViewControllersFabric
+    var viewControllersFabric: ViewControllersFactory
     var mainViewController: UIViewController { return self.navigationViewController }
     private let navigationViewController: UINavigationController
     
-    init(viewControllersFabric: ViewControllersFabric) {
+    init(viewControllersFabric: ViewControllersFactory) {
         self.viewControllersFabric = viewControllersFabric
         let rootViewController: Coordinatable = viewControllersFabric.makeTaskListViewController()
         navigationViewController = UINavigationController(rootViewController: rootViewController)
@@ -25,8 +25,8 @@ class BaseCoordinator: NSObject, Coordinator, UIAdaptivePresentationControllerDe
         push(controller, animated: animated)
     }
     
-    func goToEditTaskViewController(task: TodoTask, animated: Bool = true) {
-        let controller = viewControllersFabric.makeEditTaskViewController(task: task)
+    func goToEditTaskViewController(id: UUID, animated: Bool = true) {
+        let controller = viewControllersFabric.makeEditTaskViewController(id: id)
         push(controller, animated: animated)
     }
     

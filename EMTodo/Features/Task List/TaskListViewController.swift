@@ -2,12 +2,22 @@
 import UIKit
 import SnapKit
 
-class TaskListViewController: UIViewController, Coordinatable {
+class TaskListViewController: UIViewController, Coordinatable, TaskListPresenterDelegate {
     var coordinator: (any Coordinator)?
+    var model: TaskListModel
+    
     var taskListPresenter: TaskListPresenter = TaskListTableView()
     var toolbar = UIToolbar()
     var toolbarLabel = UILabel()
     
+    init(model: TaskListModel) {
+        self.model = model
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,23 +27,35 @@ class TaskListViewController: UIViewController, Coordinatable {
         setupToolbarLabel()
     }
     
-    static let taskNames: [String] = ["Task 1", "Task 2", "Task 3", "Task 4", "Task 5"]
-    static let taskDescriptions: [String] = ["Description 1", "Description 2", "Description 3", "Descriptiogjlsahdhfjajksdhfk;jadshdgfkjasdhgkjadhfkjvhrbfnijv ljersfdnbveagrjklshbgnre;io'jgklsdcjflkadsjgkleryionvuacmpxtighwertpx,oghwcorimvgnhn 4", "Description 5"]
-    static let tasksubtitles: [String] = ["Subtitle 1", "Subtitle 2", "Subtitle 3", "Subtitle 4", "Subtitle 5"]
-    static let bools: [Bool] = [true, false, true, false, true]
-    var tasks = (0..<10).map { _ in return TaskListItem(id: UUID(), title: taskNames.randomElement()!, taskDescription: taskDescriptions.randomElement()!, isDone: bools.randomElement()!, subtitle: tasksubtitles.randomElement()!) }
+    override func viewDidAppear(_ animated: Bool) {
+        reloadTasks()
+    }
+    
+    private func reloadTasks() {
+        model.getAllTasks { [weak self] tasks in
+            let items = tasks.map { TaskListItem(todoTask: $0) }
+            self?.taskListPresenter.setTasks(items)
+        }
+    }
     
     private func setupTaskListPresenter() {
         view.addSubview(taskListPresenter)
         taskListPresenter.translatesAutoresizingMaskIntoConstraints = false
-        
         taskListPresenter.snp.makeConstraints { [weak self] maker in
             guard let self = self else { return }
             maker.edges.equalTo(self.view.safeAreaLayoutGuide)
         }
         
-        self.taskListPresenter.setTasks(tasks)
-
+        taskListPresenter.taskDelegate = self
+        
+    }
+    
+    func taskListPresenterDidChangeCompletion(_ task: TaskListItem) {
+        model.updateTaskCompleted(task.id, isCompleted: task.isDone, completion: nil)
+    }
+    
+    func taskListPresenterDidDelete(_ task: TaskListItem) {
+        model.removeTask(task.id, completion: nil)
     }
     
     private func setupToolbar() {
@@ -67,4 +89,22 @@ class TaskListViewController: UIViewController, Coordinatable {
         coordinator?.goToAddTaskViewController(animated: true)
     }
     
+}
+
+extension TaskListItem {
+    init(todoTask: TodoTask) {
+        self.init()
+        self.id = todoTask.id
+        self.title = todoTask.title
+        self.taskDescription = todoTask.taskDescription
+        self.subTitle = getSubTitle(date: todoTask.date)
+        self.isDone = todoTask.isDone
+
+    }
+    
+    private func getSubTitle(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yyyye"
+        return formatter.string(from: date)
+    }
 }

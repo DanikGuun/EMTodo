@@ -14,7 +14,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
 
-        let viewControllerFabric = BaseViewControllerFabric()
+        let taskManager = CoreDataTaskManager()
+        let modelFactory = BaseModelsFactory(taskManager: taskManager)
+        let viewControllerFabric = BaseViewControllerFactory(modelsFactory: modelFactory)
+        
         let coordinator = BaseCoordinator(viewControllersFabric: viewControllerFabric)
         
         guard let scene = (scene as? UIWindowScene) else { return }

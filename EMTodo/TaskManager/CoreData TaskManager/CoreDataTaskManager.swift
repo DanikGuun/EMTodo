@@ -38,19 +38,15 @@ class CoreDataTaskManager: TaskManager {
     }
     
     func add(_ task: TodoTask, completion: Completion = nil) {
-        queue.async { [weak self] in
-            guard let self else { return }
-            
+        asyncCompletionTask(completion) { [weak self] in
+            guard let self else { return nil }
             let entity = NSEntityDescription.entity(forEntityName: "CDTodoTask", in: self.context)!
             self.context.perform {
                 let managedTask = CDTodoTask(entity: entity, insertInto: self.context)
                 managedTask.copyValues(from: task)
                 self.saveContext()
             }
-            DispatchQueue.main.sync {
-                completion?(.success(task))
-            }
-            
+            return task
         }
     }
     
