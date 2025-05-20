@@ -74,6 +74,7 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
         var snapshot = diffableDataSource.snapshot()
         snapshot.deleteItems(snapshot.itemIdentifiers(inSection: snapshot.sectionIdentifiers.first!))
         snapshot.appendItems(items.map { $0.id })
+        snapshot.reconfigureItems(items.map { $0.id })
         diffableDataSource.apply(snapshot)
     }
     

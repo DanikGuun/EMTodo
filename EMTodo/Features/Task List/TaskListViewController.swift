@@ -28,6 +28,7 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         reloadTasks()
     }
     
@@ -59,7 +60,7 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
     }
     
     func taskListPresenter(requestToEdit task: TaskListItem) {
-        print("requestToEdit \(task.title)")
+        coordinator?.goToEditTaskViewController(id: task.id, animated: true)
     }
     
     func taskListPresenter(requestToShare task: TaskListItem) {
@@ -112,7 +113,7 @@ extension TaskListItem {
     
     private func getSubTitle(date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "dd/MM/yyyye"
+        formatter.dateFormat = "dd/MM/yyyy"
         return formatter.string(from: date)
     }
 }

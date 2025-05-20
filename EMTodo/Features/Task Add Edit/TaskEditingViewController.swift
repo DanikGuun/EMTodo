@@ -128,9 +128,10 @@ class TaskEditingViewController: UIViewController, Coordinatable, UITextFieldDel
     
     private func loadInitialValues() {
         model.loadInitialTask { [weak self] task in
+            self?.initialTask = task
             self?.titleTextField.text = task.title
-            self?.setDateButtonText(task.date)
             self?.descriptionTextView.text = task.taskDescription
+            self?.currentDate = task.date
         }
     }
     

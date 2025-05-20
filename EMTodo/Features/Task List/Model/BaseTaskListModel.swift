@@ -10,7 +10,7 @@ class BaseTaskListModel: TaskListModel {
     func getAllTasks(completion: CompletionArray) {
         taskManager.getAll { result in
             switch result{
-            case .success(let tasks): completion?(tasks)
+            case .success(let tasks): completion?(tasks.sorted(by: { $0.date < $1.date } ))
             case .failure(_): completion?([])
             }
         }
