@@ -11,7 +11,7 @@ class CheckmarkView: UIView {
     
     private let lineWidth: CGFloat = 1.5
     private var radius: CGFloat {
-        return min(bounds.width, bounds.height) / 2
+        return max(min(bounds.width, bounds.height) / 2, 0) //max чтобы избежать NaN
     }
     
     var checkmarkBackgroundColor: UIColor = .systemGray4

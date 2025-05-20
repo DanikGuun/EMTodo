@@ -9,12 +9,16 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
     
     convenience init() {
         self.init(frame: .zero, style: .plain)
+        setup()
+    }
+    
+    private func setup() {
         self.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         self.delegate = self
         self.estimatedRowHeight = DC.cellHeight
         setupDiffableDataSource()
         setupSnapshot()
-        self.selectionFollowsFocus = false
+        self.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
     }
     
     private func setupDiffableDataSource() {
