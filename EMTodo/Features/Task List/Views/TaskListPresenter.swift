@@ -3,12 +3,22 @@ import UIKit
 
 protocol TaskListPresenter: UIView {
     
+    var taskDelegate: TaskListPresenterDelegate? { get set }
     func setTasks(_ tasks: [TaskListItem])
-    var isDoneUpdated: ((UUID) -> Void)? { get set }
     
 }
 
-struct TaskListItem: Identifiable {
+protocol TaskListPresenterDelegate {
+    func taskListPresenterDidChangeCompletion(_ task: TaskListItem)
+    func taskListPresenterDidDelete(_ task: TaskListItem)
+}
+
+extension TaskListPresenterDelegate {
+    func taskListPresenterDidChangeCompletion(_ task: TaskListItem) {}
+    func taskListPresenterDidDelete(_ task: TaskListItem) {}
+}
+
+struct TaskListItem: Identifiable, Equatable {
     var id: UUID
     var title: String
     var taskDescription: String

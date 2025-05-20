@@ -3,7 +3,7 @@ import UIKit
 
 class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
     
-    var isDoneUpdated: ((UUID) -> Void)?
+    var taskDelegate: (any TaskListPresenterDelegate)?
     private var diffableDataSource: UITableViewDiffableDataSource<UUID, UUID>!
     private var items: [TaskListItem] = []
     
@@ -13,7 +13,7 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
         self.delegate = self
         self.estimatedRowHeight = DC.cellHeight
         setupDiffableDataSource()
-        reloadSnapshot()
+        setupSnapshot()
         self.selectionFollowsFocus = false
     }
     
@@ -33,16 +33,22 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
         })
     }
     
+    private func setupSnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot<UUID, UUID>()
+        snapshot.appendSections([UUID()])
+        diffableDataSource.apply(snapshot)
+    }
+    
     func setTasks(_ tasks: [TaskListItem]) {
         items = tasks
         reloadSnapshot()
     }
     
     private func reloadSnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<UUID, UUID>()
-        snapshot.appendSections([UUID()])
+        var snapshot = diffableDataSource.snapshot()
+        snapshot.deleteItems(snapshot.itemIdentifiers(inSection: snapshot.sectionIdentifiers.first!))
         snapshot.appendItems(items.map { $0.id })
-        diffableDataSource.apply(snapshot, animatingDifferences: true)
+        diffableDataSource.apply(snapshot)
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -59,9 +65,8 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
     private func removeCellAndItem(_ indexPath: IndexPath) {
         guard let id = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         items.removeAll(where: { $0.id == id })
-        var snapshot = diffableDataSource.snapshot()
-        snapshot.deleteItems([id])
-        diffableDataSource.apply(snapshot, animatingDifferences: true)
+        reloadSnapshot()
+        taskDelegate?.taskListPresenterDidDelete(items.first(where: { $0.id == id })!)
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -76,6 +81,8 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
             conf.isDone.toggle()
             cell.contentConfiguration = conf
         }
+        
+        taskDelegate?.taskListPresenterDidChangeCompletion(items[index])
     }
     
 }
