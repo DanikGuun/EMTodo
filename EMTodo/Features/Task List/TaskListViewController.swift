@@ -36,7 +36,20 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
         model.getAllTasks { [weak self] tasks in
             let items = tasks.map { TaskListItem(todoTask: $0) }
             self?.taskListPresenter.setTasks(items)
+            self?.updateTasksCountLabel(count: tasks.count)
         }
+    }
+    
+    //На 2 функции разделил, чтобы можно было обновлять без повторного запроса, например при reloadTasks
+    private func updateTasksCountLabel() {
+        model.getAllTasks { [weak self] tasks in
+            self?.updateTasksCountLabel(count: tasks.count)
+        }
+    }
+    
+    private func updateTasksCountLabel(count: Int) {
+        let text = model.getTasksCountTitle(count)
+        toolbarLabel.text = text
     }
     
     private func setupTaskListPresenter() {
@@ -57,6 +70,7 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
     
     func taskListPresenter(didDelete task: TaskListItem) {
         model.removeTask(task.id, completion: nil)
+        updateTasksCountLabel()
     }
     
     func taskListPresenter(requestToEdit task: TaskListItem) {
@@ -64,7 +78,9 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
     }
     
     func taskListPresenter(requestToShare task: TaskListItem) {
-        print("requestToEdit \(task.title)")
+        let text = model.getTaskShareText(task.todoTask)
+        let activityViewController = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        self.present(activityViewController, animated: true)
     }
     
     private func setupToolbar() {
@@ -111,9 +127,20 @@ extension TaskListItem {
 
     }
     
+    var todoTask: TodoTask {
+        TodoTask(id: id, title: title, taskDescription: taskDescription, isDone: isDone, date: getDate())
+    }
+    
     private func getSubTitle(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd/MM/yyyy"
         return formatter.string(from: date)
     }
+    
+    private func getDate() -> Date {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yyyy"
+        return formatter.date(from: subTitle) ?? Date()
+    }
+    
 }

@@ -46,5 +46,25 @@ class BaseTaskListModel: TaskListModel {
         }
     }
     
+    func getTaskShareText(_ task: TodoTask) -> String {
+        var text = "Привет! Это моё новое задание - \(task.title)"
+        if task.taskDescription.isEmpty == false {
+            text.append("\nКонкретно надо \(task.taskDescription)")
+        }
+        text.append("\nКрайний срок: \(task.date.formatted(date: .long, time: .omitted))")
+        text.append("\nЯ его \(task.isDone ? "уже" : "ещё не") сделал))")
+        return text
+    }
+    
+    func getTasksCountTitle(_ count: Int) -> String {
+        var text = "\(count) Задач"
+        let lastNumber = count % 10
+        switch lastNumber {
+        case 1: text += "а"
+        case 2, 3, 4: text += "и"
+        default: break
+        }
+        return text
+    }
     
 }
