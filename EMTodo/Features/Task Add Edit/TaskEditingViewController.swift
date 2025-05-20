@@ -1,7 +1,7 @@
 
 import UIKit
 
-class TaskEditingViewController: UIViewController, Coordinatable {
+class TaskEditingViewController: UIViewController, Coordinatable, UITextFieldDelegate{
     
     var coordinator: (any Coordinator)?
     var titleTextField = UITextField()
@@ -19,7 +19,15 @@ class TaskEditingViewController: UIViewController, Coordinatable {
         setupTitleTextField()
         setupDatePickerButton()
         setupDescriptionTextView()
-        setDateButtonText("02/10/24")
+        currentDate = Date()
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        gesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(gesture)
+    }
+    
+    @objc
+    private func hideKeyboard() {
+        view.endEditing(true)
     }
     
     private func setupTitleTextField() {
@@ -33,6 +41,12 @@ class TaskEditingViewController: UIViewController, Coordinatable {
         
         titleTextField.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         titleTextField.placeholder = "Название..."
+        titleTextField.delegate = self
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        descriptionTextView.becomeFirstResponder()
+        return true
     }
     
     private func setupDatePickerButton() {
@@ -85,12 +99,12 @@ class TaskEditingViewController: UIViewController, Coordinatable {
             guard let self = self else { return }
             maker.top.equalTo(self.datePickerButton.snp.bottom).offset(DC.interItemSpace)
             maker.leading.trailing.equalToSuperview()
-            maker.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
+            maker.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top).offset(-50).priority(.medium)
         }
         
         descriptionTextView.isEditable = true
         descriptionTextView.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         descriptionTextView.contentInset = UIEdgeInsets(top: 4, left: DC.edgeInset, bottom: 0, right: DC.edgeInset)
-        
     }
+    
 }
