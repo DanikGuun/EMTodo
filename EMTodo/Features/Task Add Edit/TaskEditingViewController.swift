@@ -33,6 +33,11 @@ class TaskEditingViewController: UIViewController, Coordinatable, UITextFieldDel
         model.perform(task: task)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        titleTextField.becomeFirstResponder()
+    }
+    
     private func setup() {
         view.backgroundColor = .systemBackground
         setupTitleTextField()
