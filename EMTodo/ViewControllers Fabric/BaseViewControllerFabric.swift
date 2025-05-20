@@ -5,11 +5,11 @@ class BaseViewControllerFabric: ViewControllersFabric {
     }
     
     func makeAddTaskViewController() -> any Coordinatable {
-        return ViewController()
+        return TaskEditingViewController()
     }
     
     func makeEditTaskViewController(task: ToDoTask) -> any Coordinatable {
-        return ViewController()
+        return TaskEditingViewController()
     }
     
 }
