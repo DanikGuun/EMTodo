@@ -22,7 +22,7 @@ final class CoreDataTaskManagerTests: XCTestCase {
     
     func testAddGet() {
         let expectation = expectation(description: "AddTask")
-        let task = ToDoTask(id: UUID(), title: "", taskDescription: "", isDone: true, date: Date())
+        let task = TodoTask(id: UUID(), title: "", taskDescription: "", isDone: true, date: Date())
         var count = -1
         
         coreDataTM.add(task)
@@ -39,12 +39,12 @@ final class CoreDataTaskManagerTests: XCTestCase {
     }
     
     func testGetById() {
-        let task = ToDoTask(id: UUID(), title: "task", taskDescription: "", isDone: true, date: Date())
+        let task = TodoTask(id: UUID(), title: "task", taskDescription: "", isDone: true, date: Date())
         let expectation = expectation(description: "GetTask")
-        var fetchedTask: ToDoTask?
+        var fetchedTask: TodoTask?
         
         for _ in 0..<10 {
-            let t = ToDoTask(id: UUID(), title: "", taskDescription: "", isDone: true, date: Date())
+            let t = TodoTask(id: UUID(), title: "", taskDescription: "", isDone: true, date: Date())
             coreDataTM.add(t)
         }
         coreDataTM.add(task)
@@ -62,9 +62,9 @@ final class CoreDataTaskManagerTests: XCTestCase {
     }
     
     func testUpdate() {
-        let oldTask = ToDoTask(id: UUID(), title: "OldTask")
-        let newTask = ToDoTask(title: "NewTask")
-        var fetchedTask: ToDoTask?
+        let oldTask = TodoTask(id: UUID(), title: "OldTask")
+        let newTask = TodoTask(title: "NewTask")
+        var fetchedTask: TodoTask?
         let expextation = expectation(description: "UpdateTask")
         
         coreDataTM.add(oldTask)
@@ -83,8 +83,8 @@ final class CoreDataTaskManagerTests: XCTestCase {
     }
 
     func testDelete() {
-        let task = ToDoTask(id: UUID(), title: "TestTask")
-        var fetchedTask: ToDoTask?
+        let task = TodoTask(id: UUID(), title: "TestTask")
+        var fetchedTask: TodoTask?
         let expection = expectation(description: "DeleteTask")
         
         coreDataTM.add(task)
@@ -106,7 +106,7 @@ final class CoreDataTaskManagerTests: XCTestCase {
         var count = -1
         
         for _ in 0..<10 {
-            let t = ToDoTask(id: UUID(), title: "", taskDescription: "", isDone: true, date: Date())
+            let t = TodoTask(id: UUID(), title: "", taskDescription: "", isDone: true, date: Date())
             coreDataTM.add(t)
         }
         

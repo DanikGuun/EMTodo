@@ -7,7 +7,7 @@ protocol Coordinator {
     
     func popToRoot(animated: Bool)
     func goToAddTaskViewController(animated: Bool)
-    func goToEditTaskViewController(task: ToDoTask, animated: Bool)
+    func goToEditTaskViewController(task: TodoTask, animated: Bool)
     func presentDatePickerViewController(startDate: Date, callback: @escaping (Date) -> Void, sourceView: UIView, animated: Bool)
 }
 

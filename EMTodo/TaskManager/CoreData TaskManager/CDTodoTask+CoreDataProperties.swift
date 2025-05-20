@@ -22,7 +22,7 @@ extension CDTodoTask {
     @NSManaged public var taskDescription: String
     @NSManaged public var title: String
     
-    func copyValues(from task: ToDoTask, withoutID: Bool = false) {
+    func copyValues(from task: TodoTask, withoutID: Bool = false) {
         self.id = withoutID ? self.id : task.id
         self.title = task.title
         self.taskDescription = task.taskDescription

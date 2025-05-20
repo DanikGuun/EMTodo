@@ -11,7 +11,7 @@ class BaseViewControllerFabric: ViewControllersFabric {
         return TaskEditingViewController()
     }
     
-    func makeEditTaskViewController(task: ToDoTask) -> any Coordinatable {
+    func makeEditTaskViewController(task: TodoTask) -> any Coordinatable {
         return TaskEditingViewController()
     }
     

@@ -25,7 +25,7 @@ class BaseCoordinator: NSObject, Coordinator, UIAdaptivePresentationControllerDe
         push(controller, animated: animated)
     }
     
-    func goToEditTaskViewController(task: ToDoTask, animated: Bool = true) {
+    func goToEditTaskViewController(task: TodoTask, animated: Bool = true) {
         let controller = viewControllersFabric.makeEditTaskViewController(task: task)
         push(controller, animated: animated)
     }

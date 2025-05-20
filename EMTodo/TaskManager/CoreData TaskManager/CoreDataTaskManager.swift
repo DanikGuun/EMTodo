@@ -3,8 +3,8 @@ import CoreData
 
 class CoreDataTaskManager: TaskManager {
     
-    typealias ResultTask = Result<ToDoTask?, Error>
-    typealias ResultTaskArray = Result<[ToDoTask], Error>
+    typealias ResultTask = Result<TodoTask?, Error>
+    typealias ResultTaskArray = Result<[TodoTask], Error>
     typealias Completion = ((ResultTask) -> Void)?
     typealias CompletionArray = ((ResultTaskArray) -> Void)?
     
@@ -37,7 +37,7 @@ class CoreDataTaskManager: TaskManager {
         }
     }
     
-    func add(_ task: ToDoTask, completion: Completion = nil) {
+    func add(_ task: TodoTask, completion: Completion = nil) {
         queue.async { [weak self] in
             guard let self else { return }
             
@@ -58,7 +58,7 @@ class CoreDataTaskManager: TaskManager {
         asyncCompletionTask(completion) { [weak self] in
             guard let self else { return [] }
             
-            var tasks: [ToDoTask] = []
+            var tasks: [TodoTask] = []
             for task in try self.getCDTasks() {
                 tasks.append(task.toDoTask)
             }
@@ -66,7 +66,7 @@ class CoreDataTaskManager: TaskManager {
         }
     }
     
-    func update(id: UUID, task newTask: ToDoTask, completion: Completion = nil) {
+    func update(id: UUID, task newTask: TodoTask, completion: Completion = nil) {
         asyncCompletionTask(completion) { [weak self] in
             guard let self else { return nil }
             
@@ -107,7 +107,7 @@ class CoreDataTaskManager: TaskManager {
             guard let self else { return [] }
             
             let tasks = try self.getCDTasks()
-            let deletedTasks: [ToDoTask] = tasks.compactMap { $0.toDoTask }
+            let deletedTasks: [TodoTask] = tasks.compactMap { $0.toDoTask }
             
             self.context.perform {
                 for task in tasks {
@@ -145,7 +145,7 @@ class CoreDataTaskManager: TaskManager {
 }
 
 fileprivate extension CDTodoTask {
-    var toDoTask: ToDoTask {
-        return ToDoTask(id: id, title: title, taskDescription: taskDescription, isDone: isDone, date: date)
+    var toDoTask: TodoTask {
+        return TodoTask(id: id, title: title, taskDescription: taskDescription, isDone: isDone, date: date)
     }
 }

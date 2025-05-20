@@ -2,17 +2,17 @@
 import Foundation
 
 protocol TaskManager {
-    typealias Compelition = ((Result<ToDoTask?, Error>) -> Void)?
-    typealias CompelitionArray = ((Result<[ToDoTask], Error>) -> Void)?
+    typealias Compelition = ((Result<TodoTask?, Error>) -> Void)?
+    typealias CompelitionArray = ((Result<[TodoTask], Error>) -> Void)?
     
-    func add(_ task: ToDoTask, completion: Compelition)
+    func add(_ task: TodoTask, completion: Compelition)
     func remove(id: UUID, completion: Compelition)
-    func update(id: UUID, task: ToDoTask, completion: Compelition)
+    func update(id: UUID, task: TodoTask, completion: Compelition)
     func get(id: UUID, completion: Compelition)
-    func getAll(completion: ((Result<[ToDoTask], Error>) -> Void)?)
+    func getAll(completion: CompelitionArray)
 }
 
-struct ToDoTask: Equatable {
+struct TodoTask: Equatable {
     var id: UUID
     var title: String
     var taskDescription: String
