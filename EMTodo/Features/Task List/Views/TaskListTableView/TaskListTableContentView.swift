@@ -67,13 +67,11 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
     }
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        let conf = UIContextMenuConfiguration(actionProvider: { _ in
-            let act = UIAction(title: "Удалить", image: UIImage(systemName: "trash"), handler: { _ in })
-            act.attributes = UIMenuElement.Attributes.destructive
-            let menu = UIMenu(children: [act])
-            return menu
+        let menuConfiguration = UIContextMenuConfiguration(actionProvider: { [weak self] _ in
+            let conf = self?.getConfiguration()
+            return conf?.contextMenu
         })
-        return conf
+        return menuConfiguration
     }
     
     private func setupTitleLabel() {

@@ -9,13 +9,17 @@ protocol TaskListPresenter: UIView {
 }
 
 protocol TaskListPresenterDelegate {
-    func taskListPresenterDidChangeCompletion(_ task: TaskListItem)
-    func taskListPresenterDidDelete(_ task: TaskListItem)
+    func taskListPresenter(didChangeCompletion task: TaskListItem)
+    func taskListPresenter(didDelete task: TaskListItem)
+    func taskListPresenter(requestToEdit task: TaskListItem)
+    func taskListPresenter(requestToShare task: TaskListItem)
 }
 
 extension TaskListPresenterDelegate {
-    func taskListPresenterDidChangeCompletion(_ task: TaskListItem) {}
-    func taskListPresenterDidDelete(_ task: TaskListItem) {}
+    func taskListPresenter(didChangeCompletion task: TaskListItem) {}
+    func taskListPresenter(didDelete task: TaskListItem) {}
+    func taskListPresenter(requestToEdit task: TaskListItem) {}
+    func taskListPresenter(requestToShare task: TaskListItem) {}
 }
 
 struct TaskListItem: Identifiable, Equatable {

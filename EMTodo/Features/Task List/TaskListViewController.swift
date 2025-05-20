@@ -50,12 +50,20 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
         
     }
     
-    func taskListPresenterDidChangeCompletion(_ task: TaskListItem) {
+    func taskListPresenter(didChangeCompletion task: TaskListItem) {
         model.updateTaskCompleted(task.id, isCompleted: task.isDone, completion: nil)
     }
     
-    func taskListPresenterDidDelete(_ task: TaskListItem) {
+    func taskListPresenter(didDelete task: TaskListItem) {
         model.removeTask(task.id, completion: nil)
+    }
+    
+    func taskListPresenter(requestToEdit task: TaskListItem) {
+        print("requestToEdit \(task.title)")
+    }
+    
+    func taskListPresenter(requestToShare task: TaskListItem) {
+        print("requestToEdit \(task.title)")
     }
     
     private func setupToolbar() {

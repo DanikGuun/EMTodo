@@ -23,19 +23,41 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
     
     private func setupDiffableDataSource() {
         diffableDataSource = UITableViewDiffableDataSource(tableView: self, cellProvider: { [weak self] (tableView, indexPath, id) in
+            guard let self else { return nil }
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-            if let item = self?.items.first(where: { $0.id == id }) {
-                var conf = TaskListTableContentConfiguration()
-                conf.title = item.title
-                conf.taskDescription = item.taskDescription
-                conf.subtitle = item.subTitle
-                conf.isDone = item.isDone
+            if let item = self.items.first(where: { $0.id == id }) {
+                let conf = self.getConfiguration(for: item)
                 cell.contentConfiguration = conf
             }
             cell.selectionStyle = .none
             return cell
         })
     }
+    
+    private func getConfiguration(for item: TaskListItem) -> TaskListTableContentConfiguration {
+        var conf = TaskListTableContentConfiguration()
+        conf.title = item.title
+        conf.taskDescription = item.taskDescription
+        conf.subtitle = item.subTitle
+        conf.isDone = item.isDone
+        conf.contextMenu = getContextMenu(for: item)
+        return conf
+    }
+    
+    private func getContextMenu(for item: TaskListItem) -> UIMenu {
+        let editAction = UIAction(title: "Редактировать", image: UIImage(systemName: "square.and.pencil"), handler: { [weak self]  _ in
+            self?.taskDelegate?.taskListPresenter(requestToEdit: item)
+        })
+        let shareAction = UIAction(title: "Поделиться", image: UIImage(systemName: "square.and.arrow.up"), handler: { [weak self] _ in
+            self?.taskDelegate?.taskListPresenter(requestToShare: item)
+        })
+        let deleteAction = UIAction(title: "Удалить", image: UIImage(systemName: "trash"), attributes: .destructive, handler: { [weak self] _ in
+            self?.removeCellAndItem(item.id)
+        })
+        let menu = UIMenu(children: [editAction, shareAction, deleteAction])
+        return menu
+    }
+    
     
     private func setupSnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<UUID, UUID>()
@@ -68,10 +90,14 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
     
     private func removeCellAndItem(_ indexPath: IndexPath) {
         guard let id = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        removeCellAndItem(id)
+    }
+    
+    private func removeCellAndItem(_ id: UUID) {
         guard let item = items.first(where: { $0.id == id }) else { return }
         items.removeAll(where: { $0.id == id })
         reloadSnapshot()
-        taskDelegate?.taskListPresenterDidDelete(item)
+        taskDelegate?.taskListPresenter(didDelete: item)
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -87,7 +113,7 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
             cell.contentConfiguration = conf
         }
         
-        taskDelegate?.taskListPresenterDidChangeCompletion(items[index])
+        taskDelegate?.taskListPresenter(didChangeCompletion: items[index])
     }
     
 }

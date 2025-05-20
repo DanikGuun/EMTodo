@@ -7,6 +7,7 @@ struct TaskListTableContentConfiguration: UIContentConfiguration {
     var taskDescription: String?
     var subtitle: String?
     var isDone: Bool = false
+    var contextMenu: UIMenu?
     
     func makeContentView() -> any UIView & UIContentView {
         return TaskListTableContentView(configuration: self)
