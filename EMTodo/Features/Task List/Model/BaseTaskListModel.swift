@@ -68,7 +68,14 @@ class BaseTaskListModel: TaskListModel {
         return text
     }
     
-    func getFilteredTasks(word: String, tasks: [TodoTask]) -> [TodoTask] {
+    func getFilteredTasks(word: String, filterType: TaskFilterType, tasks: [TodoTask]) -> [TodoTask] {
+        var tasks = tasks.filter {
+            switch filterType {
+            case .all: return true
+            case .completed: return $0.isDone
+            case .uncompleted: return !$0.isDone
+            }
+        }
         if word.isEmpty { return tasks }
         return tasks.filter { task in
             let title = task.title.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()

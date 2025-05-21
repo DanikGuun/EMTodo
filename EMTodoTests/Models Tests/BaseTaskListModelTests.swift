@@ -55,4 +55,33 @@ final class BaseTaskListModelTests: XCTestCase {
         XCTAssertNotEqual(taskCompletion, taskToUpdate.isDone)
     }
     
+    func testGetFilteredTasks_AllFilter() {
+        let filteredTasks = model.getFilteredTasks(word: "", filterType: .all, tasks: tasks)
+        XCTAssertEqual(filteredTasks, tasks)
+    }
+    
+    func testGetFilteredTasks_CompletedFilter() {
+        let filteredTasks = model.getFilteredTasks(word: "", filterType: .completed, tasks: tasks)
+        let expectedTasks = tasks.filter { $0.isDone }
+        XCTAssertEqual(filteredTasks, expectedTasks)
+    }
+    
+    func testGetFilteredTasks_UncompletedFilter() {
+        let filteredTasks = model.getFilteredTasks(word: "", filterType: .uncompleted, tasks: tasks)
+        let expectedTasks = tasks.filter { !$0.isDone }
+        XCTAssertEqual(filteredTasks, expectedTasks)
+    }
+    
+    func testGetFilteredTasks_WithSearchWord() {
+        let filteredTasks = model.getFilteredTasks(word: "test 1", filterType: .all, tasks: tasks)
+        let expectedTasks = tasks.filter { $0.title.lowercased().contains("test 1") }
+        XCTAssertEqual(filteredTasks, expectedTasks)
+    }
+    
+    func testGetFilteredTasks_WithSearchWordAndCompletedFilter() {
+        let filteredTasks = model.getFilteredTasks(word: "test", filterType: .completed, tasks: tasks)
+        let expectedTasks = tasks.filter { $0.isDone && $0.title.lowercased().contains("test") }
+        XCTAssertEqual(filteredTasks, expectedTasks)
+    }
+    
 }

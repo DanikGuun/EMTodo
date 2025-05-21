@@ -127,12 +127,17 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
         controller.searchResultsUpdater = self
         controller.searchBar.placeholder = "Поиск"
         controller.hidesBottomBarWhenPushed = false
+        controller.scopeBarActivation = .onSearchActivation
+        controller.searchBar.scopeButtonTitles = ["Все", "Выполненные", "Не выполненные"]
         self.navigationItem.searchController = controller
     }
     
     func updateSearchResults(for searchController: UISearchController) {
+        let filterTypes: [TaskFilterType] = [.all, .completed, .uncompleted]
+        let selectedScope = searchController.searchBar.selectedScopeButtonIndex
+        let type = filterTypes[selectedScope]
         let text = searchController.searchBar.text ?? ""
-        let taskItems = model.getFilteredTasks(word: text, tasks: tasks).map { TaskListItem(todoTask: $0) }
+        let taskItems = model.getFilteredTasks(word: text, filterType: type, tasks: tasks).map { TaskListItem(todoTask: $0) }
         taskListPresenter.setTasks(taskItems)
     }
     
