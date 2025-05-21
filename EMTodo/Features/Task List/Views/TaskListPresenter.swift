@@ -2,7 +2,7 @@
 import UIKit
 
 protocol TaskListPresenter: UIView {
-    
+
     var taskDelegate: TaskListPresenterDelegate? { get set }
     func setTasks(_ tasks: [TaskListItem])
     

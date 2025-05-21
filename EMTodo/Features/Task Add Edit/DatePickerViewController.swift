@@ -28,6 +28,7 @@ class DatePickerViewController: UIViewController, Coordinatable {
     private func datePickerValueChanged() {
         let date = datePicker.date
         callback?(date)
+        self.dismiss(animated: true)
     }
 }
 

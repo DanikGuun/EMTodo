@@ -54,6 +54,7 @@ class TaskEditingViewController: UIViewController, Coordinatable, UITextFieldDel
         view.endEditing(true)
     }
     
+    //MARK: - Title textfield
     private func setupTitleTextField() {
         view.addSubview(titleTextField)
         titleTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -73,6 +74,7 @@ class TaskEditingViewController: UIViewController, Coordinatable, UITextFieldDel
         return true
     }
     
+    //MARK: DatePicker button
     private func setupDatePickerButton() {
         view.addSubview(datePickerButton)
         datePickerButton.translatesAutoresizingMaskIntoConstraints = false
@@ -108,14 +110,20 @@ class TaskEditingViewController: UIViewController, Coordinatable, UITextFieldDel
     }
     
     private func setDateButtonText(_ text: String) {
-        var attributedTitle = AttributedString(text)
-        attributedTitle.font = UIFont.preferredFont(forTextStyle: .caption1)
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.preferredFont(forTextStyle: .caption1),
+            .underlineColor: UIColor.secondaryLabel.cgColor,
+            .foregroundColor: UIColor.secondaryLabel.cgColor,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        let attributedTitle = NSAttributedString(string: text, attributes: attributes)
         
         var conf = datePickerButton.configuration
-        conf?.attributedTitle = attributedTitle
+        conf?.attributedTitle = AttributedString(attributedTitle)
         datePickerButton.configuration = conf
     }
     
+    //MARK: - Description textview
     private func setupDescriptionTextView() {
         view.addSubview(descriptionTextView)
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
@@ -131,6 +139,7 @@ class TaskEditingViewController: UIViewController, Coordinatable, UITextFieldDel
         descriptionTextView.contentInset = UIEdgeInsets(top: 4, left: DC.edgeInset, bottom: 0, right: DC.edgeInset)
     }
     
+    //MARK: - Other
     private func loadInitialValues() {
         model.loadInitialTask { [weak self] task in
             self?.initialTask = task

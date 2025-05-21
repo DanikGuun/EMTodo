@@ -34,6 +34,7 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
         setupDescriptionLabel()
     }
     
+    //MARK: - IsDone button
     private func setupIsDoneButton() {
         addSubview(isDoneView)
         isDoneView.translatesAutoresizingMaskIntoConstraints = false
@@ -45,6 +46,7 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
         }
     }
     
+    //MARK: - LabelsBackground
     private func setupLabelsBackgroundView() {
         addSubview(labelsBackgroundView)
         labelsBackgroundView.translatesAutoresizingMaskIntoConstraints = false
@@ -66,6 +68,7 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
         return menuConfiguration
     }
     
+    //MARK: - Labels
     private func setupTitleLabel() {
         labelsBackgroundView.addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -103,6 +106,7 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
         dateLabel.textColor = .secondaryLabel
     }
     
+    //MARK: - Others
     private func updateConfiguration() {
         let conf = getConfiguration()
         titleLabel.attributedText = getAttributedTitle()

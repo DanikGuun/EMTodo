@@ -21,6 +21,7 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
         self.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
     }
     
+    //MARK: - Data source
     private func setupDiffableDataSource() {
         diffableDataSource = UITableViewDiffableDataSource(tableView: self, cellProvider: { [weak self] (tableView, indexPath, id) in
             guard let self else { return nil }
@@ -58,7 +59,7 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
         return menu
     }
     
-    
+    //MARK: - Snapshot
     private func setupSnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<UUID, UUID>()
         snapshot.appendSections([UUID()])
@@ -78,6 +79,7 @@ class TaskListTableView: UITableView, TaskListPresenter, UITableViewDelegate {
         diffableDataSource.apply(snapshot)
     }
     
+    //MARK: - Cell Managment
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .normal, title: "Удалить", handler: { [weak self] (action, view, completion) in
             self?.removeCellAndItem(indexPath)

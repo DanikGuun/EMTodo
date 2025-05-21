@@ -69,7 +69,7 @@ class BaseTaskListModel: TaskListModel {
     }
     
     func getFilteredTasks(word: String, filterType: TaskFilterType, tasks: [TodoTask]) -> [TodoTask] {
-        var tasks = tasks.filter {
+        let tasks = tasks.filter {
             switch filterType {
             case .all: return true
             case .completed: return $0.isDone
