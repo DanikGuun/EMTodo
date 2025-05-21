@@ -26,14 +26,6 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func updateConfiguration() {
-        let conf = getConfiguration()
-        titleLabel.text = conf.title
-        descriptionLabel.text = conf.taskDescription
-        dateLabel.text = conf.subtitle
-        isDoneView.isSelected = conf.isDone
-    }
-    
     private func setup() {
         setupIsDoneButton()
         setupLabelsBackgroundView()
@@ -109,6 +101,36 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
         dateLabel.numberOfLines = 1
         dateLabel.font = UIFont.preferredFont(forTextStyle: .caption1)
         dateLabel.textColor = .secondaryLabel
+    }
+    
+    private func updateConfiguration() {
+        let conf = getConfiguration()
+        titleLabel.attributedText = getAttributedTitle()
+        descriptionLabel.attributedText = getAttributedDescription()
+        dateLabel.text = conf.subtitle
+        isDoneView.isSelected = conf.isDone
+    }
+    
+    private func getAttributedTitle() -> NSAttributedString {
+        let conf = getConfiguration()
+        let attributes: [NSAttributedString.Key: Any] = [
+           .font:UIFont.systemFont(ofSize: 16, weight: .medium),
+           .foregroundColor: conf.isDone ? UIColor.secondaryLabel : UIColor.label,
+           .strikethroughStyle: conf.isDone ? 1 : 0,
+           .strikethroughColor: conf.isDone ? UIColor.secondaryLabel : UIColor.clear
+        ]
+           
+        return NSAttributedString(string: conf.taskDescription ?? "", attributes: attributes)
+    }
+    
+    private func getAttributedDescription() -> NSAttributedString {
+        let conf = getConfiguration()
+        let attributes: [NSAttributedString.Key: Any] = [
+           .font: UIFont.preferredFont(forTextStyle: .caption1),
+           .foregroundColor: conf.isDone ? UIColor.secondaryLabel : UIColor.label
+        ]
+           
+        return NSAttributedString(string: conf.taskDescription ?? "", attributes: attributes)
     }
     
     private func getConfiguration() -> TaskListTableContentConfiguration {
