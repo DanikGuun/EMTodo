@@ -120,7 +120,7 @@ class TaskListTableContentView: UIView, UIContentView, UIContextMenuInteractionD
            .strikethroughColor: conf.isDone ? UIColor.secondaryLabel : UIColor.clear
         ]
            
-        return NSAttributedString(string: conf.taskDescription ?? "", attributes: attributes)
+        return NSAttributedString(string: conf.title ?? "", attributes: attributes)
     }
     
     private func getAttributedDescription() -> NSAttributedString {

@@ -13,6 +13,7 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
     init(model: TaskListModel) {
         self.model = model
         super.init(nibName: nil, bundle: nil)
+        setupObserver()
     }
     
     required init?(coder: NSCoder) {
@@ -40,18 +41,7 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
         }
     }
     
-    //На 2 функции разделил, чтобы можно было обновлять без повторного запроса, например при reloadTasks
-    private func updateTasksCountLabel() {
-        model.getAllTasks { [weak self] tasks in
-            self?.updateTasksCountLabel(count: tasks.count)
-        }
-    }
-    
-    private func updateTasksCountLabel(count: Int) {
-        let text = model.getTasksCountTitle(count)
-        toolbarLabel.text = text
-    }
-    
+    //MARK: - TaskList Presenter
     private func setupTaskListPresenter() {
         view.addSubview(taskListPresenter)
         taskListPresenter.translatesAutoresizingMaskIntoConstraints = false
@@ -83,6 +73,7 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
         self.present(activityViewController, animated: true)
     }
     
+    //MARK: - Toolbar
     private func setupToolbar() {
         view.addSubview(toolbar)
         toolbar.translatesAutoresizingMaskIntoConstraints = false
@@ -109,9 +100,35 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
         toolbarLabel.textColor = .secondaryLabel
     }
     
+    //На 2 функции разделил, чтобы можно было обновлять без повторного запроса, например при reloadTasks
+    private func updateTasksCountLabel() {
+        model.getAllTasks { [weak self] tasks in
+            self?.updateTasksCountLabel(count: tasks.count)
+        }
+    }
+    
+    private func updateTasksCountLabel(count: Int) {
+        let text = model.getTasksCountTitle(count)
+        toolbarLabel.text = text
+    }
+    
     @objc
     private func addNewTask() {
         coordinator?.goToAddTaskViewController(animated: true)
+    }
+    
+    //MARK: - Initial Task Observer
+    private func setupObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(initialTaskLoaded), name: SceneDelegate.taskLoadedNotificationName, object: nil)
+    }
+    
+    @objc
+    private func initialTaskLoaded() {
+        reloadTasks()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
 }
