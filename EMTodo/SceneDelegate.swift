@@ -12,8 +12,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     static let taskLoadedNotificationName = Notification.Name("TaskLoadedNotification")
     static let isInitialTaskLoadaedKey = "isInitialTaskLoadaed"
     var window: UIWindow?
-
-
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
 
         let taskManager = CoreDataTaskManager()

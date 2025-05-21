@@ -2,13 +2,15 @@
 import UIKit
 import SnapKit
 
-class TaskListViewController: UIViewController, Coordinatable, TaskListPresenterDelegate {
+class TaskListViewController: UIViewController, Coordinatable, TaskListPresenterDelegate, UISearchResultsUpdating {
+    
     var coordinator: (any Coordinator)?
     var model: TaskListModel
     
     var taskListPresenter: TaskListPresenter = TaskListTableView()
     var toolbar = UIToolbar()
     var toolbarLabel = UILabel()
+    var tasks: [TodoTask] = []
     
     init(model: TaskListModel) {
         self.model = model
@@ -26,6 +28,7 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
         setupTaskListPresenter()
         setupToolbar()
         setupToolbarLabel()
+        setupSearchController()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -38,6 +41,7 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
             let items = tasks.map { TaskListItem(todoTask: $0) }
             self?.taskListPresenter.setTasks(items)
             self?.updateTasksCountLabel(count: tasks.count)
+            self?.tasks = tasks
         }
     }
     
@@ -115,6 +119,21 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
     @objc
     private func addNewTask() {
         coordinator?.goToAddTaskViewController(animated: true)
+    }
+    
+    //MARK: SearchController
+    private func setupSearchController() {
+        let controller = UISearchController()
+        controller.searchResultsUpdater = self
+        controller.searchBar.placeholder = "Поиск"
+        controller.hidesBottomBarWhenPushed = false
+        self.navigationItem.searchController = controller
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        let text = searchController.searchBar.text ?? ""
+        let taskItems = model.getFilteredTasks(word: text, tasks: tasks).map { TaskListItem(todoTask: $0) }
+        taskListPresenter.setTasks(taskItems)
     }
     
     //MARK: - Initial Task Observer

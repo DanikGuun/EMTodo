@@ -10,4 +10,5 @@ protocol TaskListModel {
     func removeTask(_ id: UUID, completion: Completion)
     func getTaskShareText(_ task: TodoTask) -> String
     func getTasksCountTitle(_ count: Int) -> String
+    func getFilteredTasks(word: String, tasks: [TodoTask]) -> [TodoTask]
 }

@@ -1,6 +1,7 @@
 import Foundation
 
 class BaseTaskListModel: TaskListModel {
+    
     let taskManager: TaskManager
     
     init(taskManager: TaskManager) {
@@ -65,6 +66,16 @@ class BaseTaskListModel: TaskListModel {
         default: break
         }
         return text
+    }
+    
+    func getFilteredTasks(word: String, tasks: [TodoTask]) -> [TodoTask] {
+        if word.isEmpty { return tasks }
+        return tasks.filter { task in
+            let title = task.title.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let description = task.taskDescription.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let word = word.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            return title.contains(word) || description.contains(word)
+        }
     }
     
 }
