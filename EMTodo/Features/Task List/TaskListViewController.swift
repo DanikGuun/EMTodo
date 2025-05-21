@@ -139,6 +139,7 @@ class TaskListViewController: UIViewController, Coordinatable, TaskListPresenter
         let text = searchController.searchBar.text ?? ""
         let taskItems = model.getFilteredTasks(word: text, filterType: type, tasks: tasks).map { TaskListItem(todoTask: $0) }
         taskListPresenter.setTasks(taskItems)
+        updateTasksCountLabel(count: taskItems.count)
     }
     
     //MARK: - Initial Task Observer
